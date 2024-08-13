@@ -30,8 +30,20 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 {
     Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-    FRotator rotation = GetComponentRotation();
-    UWorld* world = GetWorld();
-    UE_LOG(LogTemp, Display, TEXT("%f"), world->GetRealTimeSeconds());
+    FVector start = GetComponentLocation();
+    FVector end = start + GetForwardVector() * _grabDistance;
+
+    FCollisionShape sphereShape = FCollisionShape::MakeSphere(_grabRadius);
+
+    FHitResult hitResult;
+    if (GetWorld()->SweepSingleByChannel(hitResult, start, end, FQuat::Identity, ECC_Grabber, sphereShape))
+    {
+        AActor* actor = hitResult.GetActor();
+        UE_LOG(LogTemp, Display, TEXT("%s"), *actor->GetActorNameOrLabel());
+    }
+    else
+    {
+        UE_LOG(LogTemp, Display, TEXT("No hit"));
+    }
 }
 
