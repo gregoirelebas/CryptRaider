@@ -4,6 +4,8 @@
 
 #include "Components/SceneComponent.h"
 #include "CoreMinimal.h"
+#include "PhysicsEngine/PhysicsHandleComponent.h"
+
 #include "Grabber.generated.h"
 
 #define ECC_Grabber ECC_GameTraceChannel2
@@ -32,6 +34,8 @@ public:
     void Release();
 
 private:
+    UPhysicsHandleComponent* _physicHandle;
+
     UPROPERTY(EditAnywhere)
     float _grabDistance = 300.0f;
 
