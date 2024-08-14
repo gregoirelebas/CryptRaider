@@ -41,13 +41,8 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 
 void UGrabber::Grab()
 {
-    FVector start = GetComponentLocation();
-    FVector end = start + GetForwardVector() * _grabDistance;
-
-    FCollisionShape sphereShape = FCollisionShape::MakeSphere(_grabRadius);
-
     FHitResult hitResult;
-    if (GetWorld()->SweepSingleByChannel(hitResult, start, end, FQuat::Identity, ECC_Grabber, sphereShape))
+    if (GetGrabbableInReach(hitResult))
     {
         _grabbedComponent = hitResult.GetComponent();
         _grabbedComponent->WakeAllRigidBodies();
@@ -63,5 +58,15 @@ void UGrabber::Release()
         _physicHandle->ReleaseComponent();
         _grabbedComponent = nullptr;
     }
+}
+
+bool UGrabber::GetGrabbableInReach(FHitResult& hitResult)
+{
+    FVector start = GetComponentLocation();
+    FVector end = start + GetForwardVector() * _grabDistance;
+
+    FCollisionShape sphereShape = FCollisionShape::MakeSphere(_grabRadius);
+
+    return GetWorld()->SweepSingleByChannel(hitResult, start, end, FQuat::Identity, ECC_Grabber, sphereShape);
 }
 

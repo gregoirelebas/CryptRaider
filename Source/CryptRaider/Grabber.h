@@ -42,4 +42,6 @@ private:
 
     UPROPERTY(EditAnywhere)
     float _grabRadius = 40.0f;
+
+    bool GetGrabbableInReach(FHitResult& hitResult);
 };
