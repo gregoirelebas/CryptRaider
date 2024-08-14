@@ -35,6 +35,7 @@ public:
 
 private:
     UPhysicsHandleComponent* _physicHandle;
+    UPrimitiveComponent* _grabbedComponent;
 
     UPROPERTY(EditAnywhere)
     float _grabDistance = 300.0f;

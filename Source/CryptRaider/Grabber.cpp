@@ -32,11 +32,11 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 {
     Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-    if (_physicHandle == nullptr)
+    if (_physicHandle == nullptr || _grabbedComponent == nullptr)
         return;
 
     FVector targetLocation = GetComponentLocation() + GetForwardVector() * _grabDistance;
-    _physicHandle->SetTargetLocationAndRotation(targetLocation, GetComponentRotation());
+    _physicHandle->SetTargetLocationAndRotation(targetLocation, _grabbedComponent->GetComponentRotation());
 }
 
 void UGrabber::Grab()
@@ -49,13 +49,19 @@ void UGrabber::Grab()
     FHitResult hitResult;
     if (GetWorld()->SweepSingleByChannel(hitResult, start, end, FQuat::Identity, ECC_Grabber, sphereShape))
     {
-        UPrimitiveComponent* hitComponent = hitResult.GetComponent();
-        _physicHandle->GrabComponentAtLocationWithRotation(hitComponent, NAME_None, hitResult.ImpactPoint, hitComponent->GetComponentRotation());
+        _grabbedComponent = hitResult.GetComponent();
+        _grabbedComponent->WakeAllRigidBodies();
+
+        _physicHandle->GrabComponentAtLocationWithRotation(_grabbedComponent, NAME_None, hitResult.ImpactPoint, _grabbedComponent->GetComponentRotation());
     }
 }
 
 void UGrabber::Release()
 {
-    UE_LOG(LogTemp, Display, TEXT("Released"));
+    if (_grabbedComponent != nullptr)
+    {
+        _physicHandle->ReleaseComponent();
+        _grabbedComponent = nullptr;
+    }
 }
 
