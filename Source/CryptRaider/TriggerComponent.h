@@ -25,6 +25,10 @@ private:
 
 	UMover* _mover;
 
+	USceneComponent* _keyPosition;
+
+	bool _isTriggered = false;
+
 private:
 	AActor* GetKeyActor() const;
 
@@ -36,4 +40,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SetMover(UMover* mover);
+
+	UFUNCTION(BlueprintCallable)
+	void SetKeyPosition(USceneComponent* keyPosition);
 };

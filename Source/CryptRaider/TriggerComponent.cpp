@@ -31,11 +31,35 @@ void UTriggerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (_mover != nullptr)
-		_mover->SetCanMove(GetKeyActor() != nullptr);
+	if (!_isTriggered)
+	{
+		AActor* keyActor = GetKeyActor();
+		if (keyActor != nullptr)
+		{
+			_isTriggered = true;
+
+			UPrimitiveComponent* keyPrimitive = Cast<UPrimitiveComponent>(keyActor->GetRootComponent());
+			if (keyPrimitive != nullptr)
+				keyPrimitive->SetSimulatePhysics(false);
+
+			if (_keyPosition != nullptr)
+			{
+				keyActor->AttachToComponent(_keyPosition, FAttachmentTransformRules::KeepRelativeTransform);
+				keyActor->SetActorLocationAndRotation(_keyPosition->GetComponentLocation(), _keyPosition->GetComponentRotation());
+			}
+
+			if (_mover != nullptr)
+				_mover->SetCanMove(true);
+		}
+	}
 }
 
 void UTriggerComponent::SetMover(UMover* mover)
 {
 	_mover = mover;
+}
+
+void UTriggerComponent::SetKeyPosition(USceneComponent* keyPosition)
+{
+	_keyPosition = keyPosition;
 }
