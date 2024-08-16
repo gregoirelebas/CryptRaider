@@ -27,6 +27,9 @@ void UMover::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponent
 {
     Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+    if (!_canMove)
+        return;
+
     FVector currentLocation = _owner->GetActorLocation();
     FVector targetLocation = _startLocation + _moveOffset;
 
@@ -35,4 +38,9 @@ void UMover::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponent
     FVector newLocation = UKismetMathLibrary::VInterpTo_Constant(currentLocation, targetLocation, DeltaTime, speed);
 
     _owner->SetActorLocation(newLocation);
+}
+
+void UMover::SetCanMove(bool canMove)
+{
+    _canMove = canMove;
 }

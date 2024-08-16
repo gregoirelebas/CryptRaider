@@ -8,6 +8,20 @@ UTriggerComponent::UTriggerComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 }
 
+AActor* UTriggerComponent::GetKeyActor() const
+{
+	TArray<AActor*> overlappingActors;
+	GetOverlappingActors(overlappingActors);
+
+	for (AActor* actor : overlappingActors)
+	{
+		if (actor->ActorHasTag(_keyTag))
+			return actor;
+	}
+
+	return nullptr;
+}
+
 void UTriggerComponent::BeginPlay()
 {
 	Super::BeginPlay();
@@ -17,12 +31,11 @@ void UTriggerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	TArray<AActor*> overlappingActors;
-	GetOverlappingActors(overlappingActors);
+	if (_mover != nullptr)
+		_mover->SetCanMove(GetKeyActor() != nullptr);
+}
 
-	if (overlappingActors.Num() > 0)
-	{
-		FString name = overlappingActors[0]->GetActorNameOrLabel();
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, name);
-	}
+void UTriggerComponent::SetMover(UMover* mover)
+{
+	_mover = mover;
 }
