@@ -48,6 +48,8 @@ void UGrabber::Grab()
         _grabbedComponent->WakeAllRigidBodies();
 
         _physicHandle->GrabComponentAtLocationWithRotation(_grabbedComponent, NAME_None, hitResult.ImpactPoint, _grabbedComponent->GetComponentRotation());
+
+        _grabbedComponent->GetOwner()->Tags.Add(_grabTag);
     }
 }
 
@@ -55,6 +57,8 @@ void UGrabber::Release()
 {
     if (_grabbedComponent != nullptr)
     {
+        _grabbedComponent->GetOwner()->Tags.Remove(_grabTag);
+
         _physicHandle->ReleaseComponent();
         _grabbedComponent = nullptr;
     }

@@ -34,7 +34,7 @@ void UTriggerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 	if (!_isTriggered)
 	{
 		AActor* keyActor = GetKeyActor();
-		if (keyActor != nullptr)
+		if (keyActor != nullptr && keyActor->ActorHasTag(_keyTag) && !keyActor->ActorHasTag("Grabbed"))
 		{
 			_isTriggered = true;
 
