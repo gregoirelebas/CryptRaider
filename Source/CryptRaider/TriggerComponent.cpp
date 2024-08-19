@@ -31,26 +31,33 @@ void UTriggerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (!_isTriggered)
+	AActor* keyActor = GetKeyActor();
+	bool isActorValid = keyActor != nullptr && keyActor->ActorHasTag(_keyTag) && !keyActor->ActorHasTag("Grabbed");
+	if (!_isTriggered && isActorValid)
 	{
-		AActor* keyActor = GetKeyActor();
-		if (keyActor != nullptr && keyActor->ActorHasTag(_keyTag) && !keyActor->ActorHasTag("Grabbed"))
+		_isTriggered = true;
+
+		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Blue, TEXT("Key in position"));
+
+		UPrimitiveComponent* keyPrimitive = Cast<UPrimitiveComponent>(keyActor->GetRootComponent());
+		if (keyPrimitive != nullptr)
+			keyPrimitive->SetSimulatePhysics(false);
+
+		if (_keyPosition != nullptr)
 		{
-			_isTriggered = true;
-
-			UPrimitiveComponent* keyPrimitive = Cast<UPrimitiveComponent>(keyActor->GetRootComponent());
-			if (keyPrimitive != nullptr)
-				keyPrimitive->SetSimulatePhysics(false);
-
-			if (_keyPosition != nullptr)
-			{
-				keyActor->AttachToComponent(_keyPosition, FAttachmentTransformRules::KeepRelativeTransform);
-				keyActor->SetActorLocationAndRotation(_keyPosition->GetComponentLocation(), _keyPosition->GetComponentRotation());
-			}
-
-			if (_mover != nullptr)
-				_mover->SetCanMove(true);
+			keyActor->AttachToComponent(_keyPosition, FAttachmentTransformRules::KeepWorldTransform);
+			keyActor->SetActorLocationAndRotation(_keyPosition->GetComponentLocation(), _keyPosition->GetComponentRotation());
 		}
+
+		if (_mover != nullptr)
+			_mover->SetCanMove(true);
+	}
+	else if (_isTriggered && !isActorValid)
+	{
+		_isTriggered = false;
+
+		if (_mover != nullptr)
+			_mover->SetCanMove(false);
 	}
 }
 

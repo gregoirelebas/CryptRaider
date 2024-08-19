@@ -46,10 +46,11 @@ void UGrabber::Grab()
     {
         _grabbedComponent = hitResult.GetComponent();
         _grabbedComponent->WakeAllRigidBodies();
+        _grabbedComponent->GetOwner()->Tags.Add(_grabTag);
+        _grabbedComponent->GetOwner()->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+        _grabbedComponent->SetSimulatePhysics(true);
 
         _physicHandle->GrabComponentAtLocationWithRotation(_grabbedComponent, NAME_None, hitResult.ImpactPoint, _grabbedComponent->GetComponentRotation());
-
-        _grabbedComponent->GetOwner()->Tags.Add(_grabTag);
     }
 }
 
